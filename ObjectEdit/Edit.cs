@@ -37,30 +37,31 @@ namespace ObjectEdit
             var map = (IDictionary<String, Object>)myObj;//Словарь свойств
             foreach (var property in map)
             {
-                if (property.Value.GetType() == typeof(string))
-                {//Вывод строкового свойства
-                    //--значение свойства
-                    y += 30;
-                    TextBox myBox = new TextBox();
-                    ControlAdd(myBox, property.Value.ToString(), new Point(80, y));
-                    //--название свойства
-                    ControlAdd(new Label(), property.Key.ToString()+":", new Point(30, y+3));
-                    //--добавляем в словарь
-                    Element["string"].Add(property.Key.ToString(), myBox);
+                if(property.Value!=null)
+                    if (property.Value.GetType() == typeof(string))
+                    {//Вывод строкового свойства
+                        //--значение свойства
+                        y += 30;
+                        TextBox myBox = new TextBox();
+                        ControlAdd(myBox, property.Value.ToString(), new Point(80, y));
+                        //--название свойства
+                        ControlAdd(new Label(), property.Key.ToString()+":", new Point(30, y+3));
+                        //--добавляем в словарь
+                        Element["string"].Add(property.Key.ToString(), myBox);
                     
-                }
-                if (property.Value.GetType() == typeof(int))
-                {//Вывод целочисленного свойства
-                    //--значение свойства
-                    y += 30;
-                    NumericUpDown myBox = new NumericUpDown();
-                    myBox.Maximum = int.MaxValue;
-                    ControlAdd(myBox, property.Value.ToString(), new Point(80, y));
-                    //--название свойства
-                    ControlAdd(new Label(), property.Key.ToString() + ":", new Point(30, y + 3));
-                    //--добавляем в словарь
-                    Element["int"].Add(property.Key.ToString(), myBox);
-                }
+                    }
+                    else if (property.Value.GetType() == typeof(int))
+                    {//Вывод целочисленного свойства
+                        //--значение свойства
+                        y += 30;
+                        NumericUpDown myBox = new NumericUpDown();
+                        myBox.Maximum = int.MaxValue;
+                        ControlAdd(myBox, property.Value.ToString(), new Point(80, y));
+                        //--название свойства
+                        ControlAdd(new Label(), property.Key.ToString() + ":", new Point(30, y + 3));
+                        //--добавляем в словарь
+                        Element["int"].Add(property.Key.ToString(), myBox);
+                    }
             }
             //Кнопка принятия изменений
             y += 30;

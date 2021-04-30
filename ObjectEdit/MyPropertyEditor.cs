@@ -13,6 +13,7 @@ namespace ObjectEdit
 {
     public partial class MyPropertyEditor : Form
     {
+
         private Dictionary<string, object> Objects = new Dictionary<string, object>();//Список объектов для редактирования
         public MyPropertyEditor()
         {
@@ -26,24 +27,26 @@ namespace ObjectEdit
             dynamic myObj = new ExpandoObject();
             myObj.Name = "Smith";
             myObj.Age = 33;
-            myObj.qwe3 = "Test2";
-            myObj.qwe2 = "Test2";
+            myObj.Test = null;
+            myObj.Text = "";
             Objects.Add("Object" + Objects.Count, myObj);
-            //2
+            //2 структура
+            //3
             myObj = new ExpandoObject();
             myObj.Name = "Дмитрий";
-            myObj.Name2 = "Козлов";
+            myObj.Name2 = "";
             myObj.Prof = "Стритель";
-            myObj.Age = 30;
+            myObj.Age = null;
             myObj.Hobby = "Туризм";
             Objects.Add("Object" + Objects.Count, myObj);
-            //3
+            //4
             myObj = new ExpandoObject();
             myObj.Name = "Mitsubishi";
             myObj.Name2 = "Lancer";
             myObj.Motor = "lb 2000";
-            myObj.Mass = "2000";
+            myObj.Mass = 2000;
             Objects.Add("Object" + Objects.Count, myObj);
+
         }
         
         private void ObjectOut() {
@@ -73,7 +76,7 @@ namespace ObjectEdit
             }
             catch
             {
-                MessageBox.Show("Возникла ошибка");
+                MessageBox.Show("Возникла какая-то ошибка");
             }
             //Обновляем список
             ObjectOut();
