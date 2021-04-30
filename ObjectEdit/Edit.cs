@@ -82,14 +82,5 @@ namespace ObjectEdit
             Close();//закрыть
         }
 
-        //===В случае если открыли форму для создания объекта===
-        //public Edit()
-        //{//Если добавляем объект
-        //    InitializeComponent();
-        //    Element.Add("string", new Dictionary<string, object>());
-        //    Element.Add("int", new Dictionary<string, object>());
-        //}
-
-
     }
 }
