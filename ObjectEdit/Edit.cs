@@ -88,7 +88,6 @@ namespace ObjectEdit
         //    InitializeComponent();
         //    Element.Add("string", new Dictionary<string, object>());
         //    Element.Add("int", new Dictionary<string, object>());
-        //    //myBox.ReadOnly = true;
         //}
 
 
