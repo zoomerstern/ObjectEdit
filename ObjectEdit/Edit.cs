@@ -76,10 +76,24 @@ namespace ObjectEdit
         }
         private void bClose(object sender, EventArgs e)
         {//Когда закрываем, обновялем данные объекта
+            
             foreach (var curr in Element["string"])//строковые
                 ((IDictionary<String, Object>)myObj)[curr.Key] = ((TextBox)curr.Value).Text.ToString();
-            foreach (var curr in Element["int"])//числовые
-                ((IDictionary<String, Object>)myObj)[curr.Key] = int.Parse(((NumericUpDown)curr.Value).Text.ToString());
+            try
+            {
+                foreach (var curr in Element["int"])//числовые
+                {
+                    if (string.IsNullOrWhiteSpace(((NumericUpDown)curr.Value).Text))//Числовой тип не может быть null
+                        throw new ArgumentException("Поле "+ curr.Key + " пустое");
+                    ((IDictionary<String, Object>)myObj)[curr.Key] = int.Parse(((NumericUpDown)curr.Value).Text.ToString());
+
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message, "Внимание !", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             Close();//закрыть
         }
 
