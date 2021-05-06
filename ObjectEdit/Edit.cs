@@ -1,92 +1,154 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ObjectEdit
 {
     public partial class Edit : Form
     {
-        private Dictionary<string, Dictionary <string, object> > Element = new Dictionary<string, Dictionary<string, object>>();//Список свойств объекта на фрме
-        private int y = 10;//Счетчик расстояния
+        class ObjElement 
+        {//Свойство передаваемого объекта
+            public string myType { get; set; }//Название свойства
+            public string myName { get; set; }//Имя свойства объекта
+            public object myObject { get; set; }//Объект на форме
+            public ObjElement(string myType, string myName, object myObject)
+            {//Инициализация свойства
+                this.myType = myType;
+                this.myName = myName;
+                this.myObject = myObject;
+            }
+            public void ChangeControl(object myObject, string myType)
+            {//Изменение объекта
+                this.myObject = myObject;
+                this.myType = myType;
+            }
+        }
+        static class PointY
+        {//Счетчик расположения элементов по оси y 
+            private static  int y = 10;
+            static public int getYplus() 
+            {//Вывод увеличенного значения
+                y += 30;
+                return y;
+            }
+            static public int getY()
+            {//Вывод значения
+                return y;
+            }
+        }
+        private Dictionary<object, ObjElement> Element = new Dictionary<object, ObjElement>();//Список свойств объекта на фрме
         public dynamic myObj = new ExpandoObject();//Передаваемый объект
-
         //===В случае если открыли форму для редактирования объекта===
         public Edit(dynamic myObj, string name)
         {//Если передали объект на редактирование
             InitializeComponent();
             this.myObj = myObj;//Переданный объект
-            //и его свойства
-            Element.Add("string",new Dictionary<string, object>());//Свойства строковые
-            Element.Add("int", new Dictionary<string, object>());//Свойства числовые
-            inputSelet(name);//Выводим свойства
+            OutputProperties(name);//Выводим свойства
             //Задваем размер окна:
-            Height = y + 75;//Высота
-            Width = 250;//Ширина
+            Height = PointY.getY() + 75;//Высота
+            Width = 300;//Ширина
         }
-
-        private void inputSelet(string name) {
-            //Вывод свойств
-            ControlAdd( new Label(), name, new Point(30, y));//Выводим лэйбл имени объекта
+        private void OutputProperties(string name) 
+        {//Вывод свойств
+            ControlAdd( new Label(), name, new Point(30, PointY.getY()));//Выводим лэйбл имени объекта
             var map = (IDictionary<String, Object>)myObj;//Словарь свойств
             foreach (var property in map)
             {
-                if(property.Value!=null)
+                if (property.Value != null)
+                {//Вывод свойства
+                    ComboBox TypeBox = TypeControl();//Вывод бокса типа объекта
+                    object SelectControl = null;//Элемент связанный с чекбокс
                     if (property.Value.GetType() == typeof(string))
                     {//Вывод строкового свойства
                         //--значение свойства
-                        y += 30;
-                        TextBox myBox = new TextBox();
-                        ControlAdd(myBox, property.Value.ToString(), new Point(80, y));
+                        SelectControl = StringControl();
+                        ControlAdd((Control)SelectControl, property.Value.ToString(), new Point(80, PointY.getYplus()));
                         //--название свойства
-                        ControlAdd(new Label(), property.Key.ToString()+":", new Point(30, y+3));
-                        //--добавляем в словарь
-                        Element["string"].Add(property.Key.ToString(), myBox);
-                    
+                        ControlAdd(new Label(), property.Key.ToString() + ":", new Point(30, PointY.getY() + 3));
+                        TypeBox.SelectedItem = "string";
                     }
                     else if (property.Value.GetType() == typeof(int))
                     {//Вывод целочисленного свойства
                         //--значение свойства
-                        y += 30;
-                        NumericUpDown myBox = new NumericUpDown();
-                        myBox.Maximum = int.MaxValue;
-                        ControlAdd(myBox, property.Value.ToString(), new Point(80, y));
+                        SelectControl = IntControl();
+                        ControlAdd((Control)SelectControl, property.Value.ToString(), new Point(80, PointY.getYplus()));
                         //--название свойства
-                        ControlAdd(new Label(), property.Key.ToString() + ":", new Point(30, y + 3));
-                        //--добавляем в словарь
-                        Element["int"].Add(property.Key.ToString(), myBox);
+                        ControlAdd(new Label(), property.Key.ToString() + ":", new Point(30, PointY.getY() + 3));
+                        TypeBox.SelectedItem = "int";
                     }
+                    Element.Add(TypeBox, new ObjElement(TypeBox.SelectedItem.ToString(), property.Key.ToString(), SelectControl));
+                    ControlAdd(TypeBox, null, new Point(190, PointY.getY()));
+                }
             }
             //Кнопка принятия изменений
-            y += 30;
             Button ButClose = new Button();
-            ButClose.Click +=new EventHandler(bClose);//Событие на нажатие
-            ControlAdd(ButClose, "Принять", new Point(80, y));
+            ButClose.Click +=new EventHandler(BClose);//Событие на нажатие
+            ControlAdd(ButClose, "Принять", new Point(110, PointY.getYplus()));
         }
-        private void ControlAdd(Control eForm, string text, Point ContrPoint) {
-            eForm.Text = text;//Вводим занчение элемента
+        private void ChangeType(object sender, EventArgs e)
+        {//Изменение эелмента формы в зависимоти от значения
+            var curr = Element[sender];//Выбираем свойсвтво из словаря
+            Controls.Remove(((Control)curr.myObject));//Удаляем стрый элемент формы
+            Control NewControl;//Создаем новый элемент формы
+            if (((ComboBox)sender).SelectedItem.ToString() == "string")
+            {//Если объект был для строковых значений
+                NewControl = StringControl();
+                ControlAdd(NewControl, ((Control)curr.myObject).Text.ToString(), ((Control)curr.myObject).Location);
+                NewControl.BringToFront();
+                Element[sender].ChangeControl(NewControl, "string");
+            }
+            else if(((ComboBox)sender).SelectedItem.ToString() == "int")
+            {//Если объект был для целочисленных значений
+                NewControl = IntControl();
+                ControlAdd(NewControl, ((Control)curr.myObject).Text.ToString(), ((Control)curr.myObject).Location);
+                NewControl.BringToFront();
+                Element[sender].ChangeControl(NewControl, "int");
+            }
+        }
+        private ComboBox TypeControl() 
+        {//Элемент формы для строковых данных
+            ComboBox TypeBox=new ComboBox();
+            TypeBox.Items.Add("int");
+            TypeBox.Items.Add("string");
+            TypeBox.Width = 70;
+            TypeBox.SelectionChangeCommitted += new EventHandler(ChangeType);
+            return TypeBox;
+        }
+        private Control StringControl()
+        {//Элемент формы для строковых данных
+            return new TextBox(); 
+        }
+        private Control IntControl()
+        {//Элемент формы для целочисленных данных
+            NumericUpDown myBox = new NumericUpDown();
+            myBox.Maximum = int.MaxValue;
+            myBox.Width = 100;
+            return myBox;
+        }
+        private void ControlAdd(Control eForm, string text, Point ContrPoint)
+        {//Вывод элемента формы
+            if(text!=null)
+                eForm.Text = text;//Вводим занчение элемента
             eForm.Location = ContrPoint;//Определяем его положение     
             Controls.Add(eForm);//Выводим на форму
         }
-        private void bClose(object sender, EventArgs e)
-        {//Когда закрываем, обновялем данные объекта
-            
-            foreach (var curr in Element["string"])//строковые
-                ((IDictionary<String, Object>)myObj)[curr.Key] = ((TextBox)curr.Value).Text.ToString();
+        private void BClose(object sender, EventArgs e)
+        {//Когда жмем кнопку "Принять", обновялем данные объекта
             try
             {
-                foreach (var curr in Element["int"])//числовые
+                foreach (var curr in Element)//числовые
                 {
-                    if (string.IsNullOrWhiteSpace(((NumericUpDown)curr.Value).Text))//Числовой тип не может быть null
-                        throw new ArgumentException("Поле "+ curr.Key + " пустое");
-                    ((IDictionary<String, Object>)myObj)[curr.Key] = int.Parse(((NumericUpDown)curr.Value).Text.ToString());
-
+                    var currObject = curr.Value;
+                    if (currObject.myType == "int") 
+                    {
+                        if (string.IsNullOrWhiteSpace(((Control)currObject.myObject).Text))//Числовой тип не может быть null
+                            throw new ArgumentException("Поле " + curr.Key + " пустое");
+                        ((IDictionary<String, Object>)myObj)[currObject.myName] = int.Parse(((Control)currObject.myObject).Text.ToString());
+                    }
+                    else
+                        ((IDictionary<String, Object>)myObj)[currObject.myName] = ((Control)currObject.myObject).Text.ToString();
                 }
             }
             catch (ArgumentException ex)
@@ -96,6 +158,5 @@ namespace ObjectEdit
             }
             Close();//закрыть
         }
-
     }
 }
