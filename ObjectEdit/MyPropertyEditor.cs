@@ -67,10 +67,10 @@ namespace ObjectEdit
             //Определяем имя объекта
             string objName = dataGridView1[1, dataGridView1.CurrentRow.Index].Value.ToString();
             //Открываем форму для редактирования и переносим объект с его именем
-            Edit frm = new Edit(Objects[objName], objName);
+            Edit frm = new Edit(objName, Objects[objName]);
             if (frm.Enabled != false)
                 frm.ShowDialog();
-            Objects[objName] = frm.myObj;//Обновляем объект
+            Objects[objName] = frm.NewObj;//Обновляем объект
             //Обновляем список
             ObjectOut();
             return;

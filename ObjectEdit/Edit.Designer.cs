@@ -38,6 +38,7 @@ namespace ObjectEdit
             this.ClientSize = new System.Drawing.Size(308, 303);
             this.Name = "Edit";
             this.Text = "Edit";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Edit_FormClosing);
             this.ResumeLayout(false);
 
         }
