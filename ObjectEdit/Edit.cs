@@ -7,27 +7,27 @@ namespace ObjectEdit
 {
     public partial class Edit : Form
     {
-        public class TypeControlProperty
+        public class EditControlProperty
         {//Класс обработки типа свойства
-            private readonly ICheckType _check;//Интерфейс в который внедряем  вид обработки
-            public TypeControlProperty(ICheckType check)
+            private readonly IEdit _edit;//Интерфейс в который внедряем  вид обработки
+            public EditControlProperty(IEdit edit)
             {//Внедрение зависимотси
-                _check = check;
+                _edit = edit;
             }
             public Control ReturnControl(object property)
             {//Возврат конроллера для определеного типа свойства
-                return _check.Check(property);
+                return _edit.CurrControl(property);
             }
-            public Control ChangeType(string type)
+            public Control ChangeControl(string type)
             {//Изменение контроллера в случае изменения типа свойства
-                return _check.ChangeType(type);
+                return _edit.ChangeControl(type);
             }
             public string ReturnName()
             {//Возврат имени типа свойства
-                return _check.TypeCheck();
+                return _edit.TypeCheck();
             }
         }
-        public TypeControlProperty myTypeControlProperty;
+        public EditControlProperty myEditControlProperty;
         class ObjElement 
         {//Свойство передаваемого объекта
             public string myType { get; set; }//Название свойства
@@ -91,7 +91,7 @@ namespace ObjectEdit
         }
         private void OutProperty() {
             Element = new Dictionary<object, ObjElement>();
-            myTypeControlProperty = new TypeControlProperty(new IntOrString());//Обьявляем класс обработки свойств. И делаем в него инъекциюо класса для работы со строковыми и целыми значениями
+            myEditControlProperty = new EditControlProperty(new IntOrString());//Обьявляем класс обработки свойств. И делаем в него инъекциюо класса для работы со строковыми и целыми значениями
             var map = (IDictionary<String, Object>)NewObj;//Словарь свойств
             foreach (var property in map)
             {
@@ -100,8 +100,8 @@ namespace ObjectEdit
                     Label myLabel = LabelControl(property.Key.ToString() + ":");
                     ComboBox TypeBox = TypeControl();//Инииализация бокса типа объекта
                     Control PropertyControl;//Элемент связанный с чекбокс и контейнер для свойства
-                    PropertyControl = myTypeControlProperty.ReturnControl(property.Value);//вывод соответвующего элемента формы
-                    TypeBox.SelectedItem = myTypeControlProperty.ReturnName();//Вывод названия типа данных
+                    PropertyControl = myEditControlProperty.ReturnControl(property.Value);//вывод соответвующего элемента формы
+                    TypeBox.SelectedItem = myEditControlProperty.ReturnName();//Вывод названия типа данных
                     ControlAdd(PropertyControl, property.Value.ToString(), new Point(80, PointY.getYplus()));//Вывод контейнера свойства
                     ControlAdd(myLabel, null, new Point(30, PointY.getY() + 3)); ; ;//Вывод лейбла названия свойства
                     ControlAdd(TypeBox, null, new Point(190, PointY.getY()));//Вывод комбобокса типов 
@@ -113,10 +113,10 @@ namespace ObjectEdit
         {//Изменение эелмента формы в зависимоти от значения
             var curr = Element[sender];//Выбираем свойсвтво из словаря
             Controls.Remove((curr.myObject));//Удаляем стрый элемент формы
-            Control NewControl = myTypeControlProperty.ChangeType(((ComboBox)sender).SelectedItem.ToString());//Заменяем контроллер
+            Control NewControl = myEditControlProperty.ChangeControl(((ComboBox)sender).SelectedItem.ToString());//Заменяем контроллер
             ControlAdd(NewControl, (curr.myObject).Text.ToString(), (curr.myObject).Location);
             NewControl.BringToFront();//Выводим на передний план
-            Element[sender].ChangeControl(NewControl, myTypeControlProperty.ReturnName());
+            Element[sender].ChangeControl(NewControl, myEditControlProperty.ReturnName());
         }
         //==Типизированные элементы формы и работа с ними==
         private Label LabelControl(string  text)

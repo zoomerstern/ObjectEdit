@@ -2,16 +2,16 @@
 
 namespace ObjectEdit
 {
-    public interface ICheckType
-    {//Интерфейс через который будем обращаться к классу, обрабатывающем свойства
-         Control Check(object property);//Вывод контроллера, в зависимости от определенного типа
-         Control ChangeType(string type);//Замена теущего контроллера на другой
+    public interface IEdit
+    {//Интерфейс через который будем обращаться к классу-редактору
+         Control CurrControl(object property);//Вывод контроллера, в зависимости от определенного типа
+         Control ChangeControl(string type);//Замена теущего контроллера на другой
          string TypeCheck();//Возврат названия типа
     }
-    public class IntOrString : ICheckType
-    {//Классо обработки целого и строкового типа
+    public class IntOrString : IEdit
+    {//Редактор обработки целого и строкового типа
         private string MyType{ get; set; }//Название типа свойства
-        public Control Check(object property)
+        public Control CurrControl(object property)
         {//Вывод контроллера свойства
             Control NewControl = new Control();
             if (property.GetType() == typeof(string))
@@ -26,7 +26,7 @@ namespace ObjectEdit
             }
             return NewControl;
         }
-        public Control ChangeType(string type)
+        public Control ChangeControl(string type)
         {//Вывод контроллера свойства для заммены
             Control NewControl = new Control();
             if (type == "string")
