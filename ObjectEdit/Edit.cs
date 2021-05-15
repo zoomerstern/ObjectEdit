@@ -7,6 +7,27 @@ namespace ObjectEdit
 {
     public partial class Edit : Form
     {
+        public class TypeControlProperty
+        {//Класс обработки типа свойства
+            private readonly ICheckType _check;//Интерфейс в который внедряем  вид обработки
+            public TypeControlProperty(ICheckType check)
+            {//Внедрение зависимотси
+                _check = check;
+            }
+            public Control ReturnControl(object property)
+            {//Возврат конроллера для определеного типа свойства
+                return _check.Check(property);
+            }
+            public Control ChangeType(string type)
+            {//Изменение контроллера в случае изменения типа свойства
+                return _check.ChangeType(type);
+            }
+            public string ReturnName()
+            {//Возврат имени типа свойства
+                return _check.TypeCheck();
+            }
+        }
+        public TypeControlProperty myTypeControlProperty;
         class ObjElement 
         {//Свойство передаваемого объекта
             public string myType { get; set; }//Название свойства
@@ -66,11 +87,12 @@ namespace ObjectEdit
             MyBut.Click += new EventHandler(BClose);//Событие на нажатие
             ControlAdd(MyBut, "Принять", new Point(190, PointY.getY()));//Добавляем кнопку
             //Добавление элементов свойств
-            Outroperty();
+            OutProperty();
 
         }
-        private void Outroperty() {
+        private void OutProperty() {
             Element = new Dictionary<object, ObjElement>();
+            myTypeControlProperty = new TypeControlProperty(new IntOrString());//Обьявляем класс обработки свойств. И делаем в него инъекциюо класса для работы со строковыми и целыми значениями
             var map = (IDictionary<String, Object>)NewObj;//Словарь свойств
             foreach (var property in map)
             {
@@ -78,17 +100,9 @@ namespace ObjectEdit
                 {//Вывод свойства
                     Label myLabel = LabelControl(property.Key.ToString() + ":");
                     ComboBox TypeBox = TypeControl();//Инииализация бокса типа объекта
-                    Control PropertyControl = new Control();//Элемент связанный с чекбокс и контейнер для свойства
-                    if (property.Value.GetType() == typeof(string))
-                    {//Вывод строкового свойства
-                        PropertyControl = StringControl();//Определяем контроллер для строкового свойтва 
-                        TypeBox.SelectedItem = "string";//Задаем значение комбобокса(строковый)
-                    }
-                    else if (property.Value.GetType() == typeof(int))
-                    {//Вывод целочисленного свойства
-                        PropertyControl = IntControl();//Определяем контроллер для целочисленного свойтва 
-                        TypeBox.SelectedItem = "int";//Задаем значение комбобокса(числовой)
-                    }
+                    Control PropertyControl;//Элемент связанный с чекбокс и контейнер для свойства
+                    PropertyControl = myTypeControlProperty.ReturnControl(property.Value);//вывод соответвующего элемента формы
+                    TypeBox.SelectedItem = myTypeControlProperty.ReturnName();//Вывод названия типа данных
                     ControlAdd(PropertyControl, property.Value.ToString(), new Point(80, PointY.getYplus()));//Вывод контейнера свойства
                     ControlAdd(myLabel, null, new Point(30, PointY.getY() + 3)); ; ;//Вывод лейбла названия свойства
                     ControlAdd(TypeBox, null, new Point(190, PointY.getY()));//Вывод комбобокса типов 
@@ -100,21 +114,10 @@ namespace ObjectEdit
         {//Изменение эелмента формы в зависимоти от значения
             var curr = Element[sender];//Выбираем свойсвтво из словаря
             Controls.Remove((curr.myObject));//Удаляем стрый элемент формы
-            if (((ComboBox)sender).SelectedItem.ToString() == "string")
-            {//Если объект был для строковых значений
-                Control NewControl = StringControl();
-                ControlAdd(NewControl, (curr.myObject).Text.ToString(), (curr.myObject).Location);
-                NewControl.BringToFront();
-                Element[sender].ChangeControl(NewControl, "string");
-            }
-            else if(((ComboBox)sender).SelectedItem.ToString() == "int")
-            {//Если объект был для целочисленных значений
-                Control NewControl = IntControl();
-                ControlAdd(NewControl, (curr.myObject).Text.ToString(), (curr.myObject).Location);
-                NewControl.BringToFront();
-                Element[sender].ChangeControl(NewControl, "int");
-            }
-            
+            Control NewControl = myTypeControlProperty.ChangeType(((ComboBox)sender).SelectedItem.ToString());//Заменяем контроллер
+            ControlAdd(NewControl, (curr.myObject).Text.ToString(), (curr.myObject).Location);
+            NewControl.BringToFront();//Выводим на передний план
+            Element[sender].ChangeControl(NewControl, myTypeControlProperty.ReturnName());
         }
         //==Типизированные элементы формы и работа с ними==
         private Label LabelControl(string  text)
@@ -132,19 +135,6 @@ namespace ObjectEdit
             TypeBox.Width = 70;
             TypeBox.SelectionChangeCommitted += new EventHandler(ChangeType);
             return TypeBox;
-        }
-        private Control StringControl()
-        {//Элемент формы для строковых данных
-            TextBox myBox = new TextBox();
-            myBox.Width = 100;
-            return new TextBox(); 
-        }
-        private Control IntControl()
-        {//Элемент формы для целочисленных данных
-            NumericUpDown myBox = new NumericUpDown();
-            myBox.Maximum = int.MaxValue;
-            myBox.Width = 100;
-            return myBox;
         }
         private void ControlAdd(Control eForm, string text, Point ContrPoint)
         {//Вывод элемента формы
@@ -187,12 +177,12 @@ namespace ObjectEdit
                 Controls.Remove(cur.Value.myObject);
             }
             PointY.dropY();//обнуление занчения оси икс
-            Outroperty();//И занеого отображаем на форме элементы свойств
+            OutProperty();//И занеого отображаем на форме элементы свойств
             Height = PointY.getY() + 75;//Высота формы
         }
         private void BClose(object sender, EventArgs e)
         {//Когда жмем кнопку "Принять", обновялем данные объекта
-            var myObj = new ExpandoObject() as IDictionary<string, Object>; ;
+            var myObj = new ExpandoObject() as IDictionary<string, Object>;
             try
             {
                 foreach (var curr in Element)//числовые
