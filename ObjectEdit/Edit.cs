@@ -47,7 +47,7 @@ namespace ObjectEdit
                 this.myType = myType;
             }
         }
-        public dynamic NewObj { get; set; } //Измененный объект, который будет передаваться в другую форму
+        public dynamic NewObj { get; set; }//Измененный объект, который будет передаваться в другую форму
         static class PointY
         {//Счетчик расположения элементов по оси y 
             private static int y = 10;
@@ -88,7 +88,6 @@ namespace ObjectEdit
             ControlAdd(MyBut, "Принять", new Point(190, PointY.getY()));//Добавляем кнопку
             //Добавление элементов свойств
             OutProperty();
-
         }
         private void OutProperty() {
             Element = new Dictionary<object, ObjElement>();

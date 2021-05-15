@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ObjectEdit
 {
     public partial class MyPropertyEditor : Form
     {
-
         private Dictionary<string, object> Objects = new Dictionary<string, object>();//Список объектов для редактирования
         public MyPropertyEditor()
         {
@@ -30,8 +23,7 @@ namespace ObjectEdit
             myObj.Test = null;
             myObj.Text = "";
             Objects.Add("Object" + Objects.Count, myObj);
-            //2 структура
-            //3
+            //2
             myObj = new ExpandoObject();
             myObj.Name = "Дмитрий";
             myObj.Name2 = "";
@@ -39,14 +31,13 @@ namespace ObjectEdit
             myObj.Age = null;
             myObj.Hobby = "Туризм";
             Objects.Add("Object" + Objects.Count, myObj);
-            //4
+            //3
             myObj = new ExpandoObject();
             myObj.Name = "Mitsubishi";
             myObj.Name2 = "Lancer";
             myObj.Motor = "lb 2000";
             myObj.Mass = 2000;
             Objects.Add("Object" + Objects.Count, myObj);
-
         }
         
         private void ObjectOut() {
