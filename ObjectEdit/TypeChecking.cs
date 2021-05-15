@@ -7,7 +7,6 @@ using System.Windows.Forms;
 
 namespace ObjectEdit
 {
-  
     public interface ICheckType
     {//Интерфейс через который будем обращаться к классу, обрабатывающем свойства
          Control Check(object property);//Вывод контроллера, в зависимости от определенного типа
@@ -16,7 +15,7 @@ namespace ObjectEdit
     }
     public class IntOrString : ICheckType
     {//Целый тип или строковый
-        private string MyType{ get; set; }
+        private string MyType{ get; set; }//название типа свойства
         public Control Check(object property)
         {
             Control NewControl = new Control();
