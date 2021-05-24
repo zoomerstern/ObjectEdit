@@ -52,7 +52,8 @@
     <Compile Include="Add.Designer.cs">
       <DependentUpon>Add.cs</DependentUpon>
     </Compile>
-    <Compile Include="TypeChecking.cs" />
+    <Compile Include="ClassPoint.cs" />
+    <Compile Include="ClassFactory.cs" />
     <Compile Include="Edit.cs">
       <SubType>Form</SubType>
     </Compile>

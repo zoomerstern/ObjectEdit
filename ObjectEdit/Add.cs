@@ -8,14 +8,14 @@ namespace ObjectEdit
     {
         public class MyProperty 
         {//Класс нового свойства
-            public string myname;//имя
-            public string myvalue;//значение
-            public string mytype;//тип
-            public MyProperty(string myname, string myvalue, string mytype)
+            public string myName;//имя
+            public string myValue;//значение
+            public string myType;//тип
+            public MyProperty(string myName, string myValue, string myType)
             {
-                this.myname= myname;
-                this.myvalue= myvalue;
-                this.mytype= mytype;
+                this.myName= myName;
+                this.myValue= myValue;
+                this.myType= myType;
             }
         }
         public MyProperty NewProperty { get; set; }//Передаваемое свойсто
@@ -23,8 +23,8 @@ namespace ObjectEdit
         {
             InitializeComponent();
             //Инициализация бокса типов
-            comboBox1.Items.Add("int");
-            comboBox1.Items.Add("string");
+            comboBox1.Items.Add(typeof(int).Name);
+            comboBox1.Items.Add(typeof(string).Name);
         }
 
         private void bAdd(object sender, EventArgs e)
@@ -38,7 +38,7 @@ namespace ObjectEdit
                 MessageBox.Show("Название свойства не может быть пустым");
                 return;
             }
-            if (comboBox1.SelectedItem == null || (comboBox1.SelectedItem.ToString() != "int" && comboBox1.SelectedItem.ToString() != "string"))
+            if (comboBox1.SelectedItem == null || (comboBox1.SelectedItem.ToString() != typeof(int).Name && comboBox1.SelectedItem.ToString() != typeof(string).Name))
             {//Проверка типа
                 MessageBox.Show("Неправильный тип");
                 return;
@@ -48,7 +48,7 @@ namespace ObjectEdit
                 MessageBox.Show("Значение свойства не может быть пустым");
                 return;
             }
-            if(comboBox1.SelectedItem.ToString() == "int" && Regex.IsMatch(val, @"\D"))
+            if(comboBox1.SelectedItem.ToString() == typeof(int).Name && Regex.IsMatch(val, @"\D"))
             {//Проверка целочисленного значения
                 MessageBox.Show("Ошибка в числовом значнии");
                 return;
