@@ -10,12 +10,10 @@ namespace ObjectEdit
     {
         class ObjElement 
         {//Свойство передаваемого объекта
-            public string myName { get; set; }//Имя свойства объекта
-            public Control myLabelObject { get; set; }//Объект на форме
+            public Control myLabelObject { get; set; }//Имя свойства объекта
             public Control myControl { get; set; }//Объект на форме
-            public ObjElement( string myName, Control myLabelObject, Control myControl)
+            public ObjElement(Control myLabelObject, Control myControl)
             {//Инициализация свойства
-                this.myName = myName;
                 this.myLabelObject = myLabelObject;
                 this.myControl = myControl;
             }
@@ -56,14 +54,14 @@ namespace ObjectEdit
             {
                 if (property.Value != null && Factory.ContainsKey(property.Value.GetType()))
                 {//Вывод свойства
-                    Label myLabel = LabelControl(property.Key.ToString() + ":");
+                    Label myLabel = LabelControl(property.Key.ToString());
                     Control PropertyControl = Factory[property.Value.GetType()].ReturnControl();//Элемент связанный с чекбокс и контейнер для свойства
                     ComboBox TypeBox = TypeControl();//Инииализация бокса типа объекта
                     TypeBox.SelectedItem = property.Value.GetType().Name;//Вывод названия типа данных
                     ControlAdd(PropertyControl, property.Value.ToString(), new Point(80, PointY.getYplus()));//Вывод контейнера свойства
                     ControlAdd(myLabel, null, new Point(30, PointY.getY() + 3));//Вывод лейбла названия свойства
                     ControlAdd(TypeBox, null, new Point(190, PointY.getY()));//Вывод комбобокса типов 
-                    Element.Add(TypeBox, new ObjElement(property.Key.ToString(), myLabel, PropertyControl));//Добавление в словарь свойства 
+                    Element.Add(TypeBox, new ObjElement(myLabel, PropertyControl));//Добавление в словарь свойства 
                 }
             }
         }  
@@ -148,7 +146,7 @@ namespace ObjectEdit
                     string key = ((ComboBox)curr.Key).SelectedItem.ToString();
                     var currFactory = Factory.Where(x => x.Key.Name == key).FirstOrDefault();//Выбираем обработчик
                     if (currFactory.Key != null)
-                        myObj.Add(currObject.myName, currFactory.Value.ReturnValue(currObject.myControl.Text));//Добовляем свойство
+                        myObj.Add(currObject.myLabelObject.Text, currFactory.Value.ReturnValue(currObject.myControl.Text));//Добовляем свойство
                 }
             }
             catch (ArgumentException ex)
